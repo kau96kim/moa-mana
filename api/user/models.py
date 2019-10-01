@@ -1,6 +1,5 @@
+from api.mana.models import Mana, Episode
 from django.db import models
-from api.mana.models import Mana
-from api.episode.models import Episode
 
 
 class User(models.Model):

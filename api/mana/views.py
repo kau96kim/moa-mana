@@ -1,50 +1,19 @@
-from django.shortcuts import render
-from multiprocessing import Pool
-from api.mana.models import Mana
-from api.models import Url
-from bs4 import BeautifulSoup
-import itertools
-import requests
+from api.mana.serializers import ManaSerializer, EpisodeSerializer
+from rest_framework import viewsets, filters
+from rest_framework.response import Response
+from api.mana.models import Mana, Episode
 
 
-url = Url.objects.get(id=1).link
+class ManaViewSet(viewsets.ModelViewSet):
+    queryset = Mana.objects.all()
+    serializer_class = ManaSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
-
-def get_page_list():
-    req = requests.get(f"{url}/bbs/page.php?hid=manga_list")
-    soup = BeautifulSoup(req.content, 'html.parser')
-
-    last_page = soup.find("i", class_="fa-angle-double-right").parent['href']
-    last_page = int(last_page[last_page.index("(")+1:last_page.index(")")]) + 1
-    page_list = list(range(0, last_page))
-
-    return page_list
-
-
-def get_mana_list(page):
-    mana_list = []
-
-    req = requests.get(f"{url}/bbs/page.php?hid=manga_list&page={page}")
-    soup = BeautifulSoup(req.content, 'html.parser')
-    manas = soup.select("div.manga-subject > a")
-
-    for mana in manas:
-        link = mana['href']
-        title = mana.text.replace("\n", "").replace("\t", "")
-        mana_list.append({'title': title, 'link': link})
-
-    return mana_list
-
-
-def post_mana_list(request):
-    pool = Pool(processes=8)
-
-    title_list = pool.map(get_mana_list, get_page_list())
-    mana_list = list(itertools.chain.from_iterable(title_list))
-
-    for mana in mana_list:
-        Mana(title=mana['title'], link=mana['link']).save()
-
-
+    def retrieve(self, request, pk=None):
+        mana = Mana.objects.get(pk=pk)
+        queryset = mana.episode_set.all()
+        serializer = EpisodeSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 

@@ -37,10 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'api',
     'api.mana',
     'api.user',
-    'api.episode',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'moamana.urls'
+
+
+CRONJOBS = [
+    ('*/5 * * * *', 'moamana.cron.mana.post_mana_list'),
+    ('*/5 * * * *', 'moamana.cron.episode.post_episode_list'),
+]
+
 
 TEMPLATES = [
     {
@@ -122,3 +130,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20
+}

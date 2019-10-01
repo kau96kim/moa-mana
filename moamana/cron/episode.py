@@ -1,11 +1,9 @@
-from django.shortcuts import render
-from api.episode.models import Episode
-from api.mana.models import Mana
+from api.mana.models import Mana, Episode
 from bs4 import BeautifulSoup
 import requests
 
 
-def post_episode_list(request):
+def post_episode_list():
     title = "다가시카시"
 
     mana = Mana.objects.filter(title=title).first()
@@ -14,7 +12,6 @@ def post_episode_list(request):
 
     episodes = soup.find("div", class_="chapter-list").find_all("a")
     episodes = list(reversed(episodes))
-    episode_list = []
 
     order = Episode.objects.filter(mana=mana).order_by('-order').first()
     if order is None:
@@ -31,6 +28,3 @@ def post_episode_list(request):
         print(episode_title, link, order)
 
         Episode(title=episode_title, link=link, order=order, status='X', mana=mana).save()
-
-    return episode_list
-
