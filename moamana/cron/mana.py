@@ -36,17 +36,16 @@ def get_mana_list(page):
 
 
 def post_mana_list():
-    print("Start")
+    try:
+        pool = Pool(processes=8)
 
-    pool = Pool(processes=8)
+        title_list = pool.map(get_mana_list, get_page_list())
+        mana_list = list(itertools.chain.from_iterable(title_list))
 
-    title_list = pool.map(get_mana_list, get_page_list())
-    mana_list = list(itertools.chain.from_iterable(title_list))
+        for mana in mana_list:
+            Mana(title=mana['title'], link=mana['link']).save()
 
-    for mana in mana_list:
-        Mana(title=mana['title'], link=mana['link']).save()
-
-    print("End")
+    except Exception as e:
+        print(e)
 
 
-post_mana_list()

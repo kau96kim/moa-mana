@@ -1,16 +1,22 @@
-from api.mana.models import Mana, Episode
+from django.db.models.signals import post_save
+from django.contrib.auth.models import User
+from django.dispatch import receiver
 from django.db import models
+from api.mana.models import Mana, Episode
 
 
-class User(models.Model):
-    nickname = models.CharField(max_length=10, unique=True)
-    username = models.CharField(max_length=10, unique=True)
-    password = models.CharField(max_length=200)
-    episodes = models.ManyToManyField(Episode)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     manas = models.ManyToManyField(Mana)
+    episodes = models.ManyToManyField(Episode)
 
-    class Meta:
-        ordering = ["username"]
 
-    def __str__(self):
-        return self.username
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()

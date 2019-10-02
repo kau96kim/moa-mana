@@ -25,6 +25,4 @@ def post_episode_list():
         episode_title = episode.find("div", class_="title").find(text=True, recursive=False)
         episode_title = episode_title.replace("\n", "").replace("\t", "").replace(title, title + " ")
 
-        print(episode_title, link, order)
-
         Episode(title=episode_title, link=link, order=order, status='X', mana=mana).save()

@@ -7,10 +7,10 @@ class ManaSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Mana
-        fields = ['pk', 'title', 'link', 'url']
+        fields = ['pk', 'title', 'url']
 
 
 class EpisodeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Episode
-        fields = ['title', 'order', 'link', 'status', 'mana']
+        fields = ['title', 'order', 'status']
