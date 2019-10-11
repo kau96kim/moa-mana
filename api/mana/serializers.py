@@ -8,10 +8,7 @@ class ManaSerializer(serializers.HyperlinkedModelSerializer):
 
     def _is_subscribed(self, obj):
         request = self.context['request']
-        if request is not None:
-            if request.user is not None:
-                return 'O' if request.user.profile.manas.filter(pk=obj.pk).exists() else 'X'
-        return None
+        return True if request.user.profile.manas.filter(pk=obj.pk).exists() else False
 
     class Meta:
         model = Mana

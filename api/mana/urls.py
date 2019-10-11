@@ -12,7 +12,7 @@ router = routers.DefaultRouter()
 # PATCH /mana/<id> # Partially updates a specific mana
 # DELETE /mana/<id> # Remove a specific mana
 router.register(r'list', views.ManaViewSet, basename='mana')
-router.register(r'subscribe', views.SubscribedManaViewSet, basename='subscribed_mana')
+router.register(r'subscribed', views.SubscribedManaViewSet, basename='subscribed_mana')
 
 urlpatterns = [
     path('', include(router.urls)),
